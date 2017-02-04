@@ -1,6 +1,7 @@
 #export ROSBOTS_HOME=/home/pi
 #export ROSBOTS_WS_PATH=/home/pi/ros_catkin_ws
 . ${ROSBOTS_WS_PATH}/build/opt/ros/kinetic/setup.sh
+. ${ROSBOTS_HOME}/rosbots_catkin_ws/devel/setup.sh
 
 export PYTHONPATH="${ROSBOTS_HOME}/lib/python:${PYTHONPATH}"
 

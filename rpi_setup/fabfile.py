@@ -219,15 +219,40 @@ def step_3_setup_ros_rosbots_packages():
     home_path = run("pwd")
     git_path = home_path + "/gitspace"
     rosbots_path = git_path + "/rosbots_driver"
-    ws_dir = home_path + WS_DIR
+    ws_dir = home_path + "/rosbots_catkin_ws" # home_path + WS_DIR
     install_dir = home_path + INSTALL_DIR
+    main_ros_ws_dir = home_path + WS_DIR
 
     sudo("apt-get install -y python-pip")
     sudo("pip install picamera")
+
+    # Create a separate rosbots_catkin_ws outside of core ROS
+    if not fabfiles.exists(ws_dir):
+        _fp("Need to create and init rosbots catkin workspace")
+        run("mkdir -p " + ws_dir + "/src")
+        
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        with cd(ws_dir + "/src"):
+            run(main_ros_ws_dir + "/src/catkin/bin/catkin_init_workspace")
+
+        with cd(ws_dir):
+            run(main_ros_ws_dir + "/src/catkin/bin/catkin_make")
+            run(main_ros_ws_dir + "/src/catkin/bin/catkin_make install")
+        env.shell = old_shell
+        
+        src_cmd = "source " + ws_dir + "/devel/setup.bash"
+        if run("grep '" + src_cmd + "' ~/.bashrc", warn_only=True).succeeded:
+            _fp("Sourcing of ROSbots catkin ws env setup.bash is already in your bashrc")
+        else:
+            _pp("Going to add ROSbots catkin ws source setup into your bashrc")
+            run("echo '" + src_cmd + "\n' >> ~/.bashrc")
     
     if not fabfiles.exists(git_path):
         _fp("Did not find rosbots repo, cloning...")
         run("mkdir " + git_path)
+
+    if not fabfiles.exists(rosbots_path):
         with cd(git_path):
             run("git clone https://github.com/ROSbots/rosbots_driver.git")
             
@@ -243,7 +268,13 @@ def step_3_setup_ros_rosbots_packages():
             run("git rebase origin/master")
 
     with cd(ws_dir):
-        run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        run(main_ros_ws_dir + "/src/catkin/bin/catkin_make")
+        run(main_ros_ws_dir + "/src/catkin/bin/catkin_make install")
+        env.shell = old_shell
 
     # Installing RPIO DMA PWM library
     with cd(git_path):
@@ -443,6 +474,37 @@ def step_1_setup_ros_for_pi():
             # Add other setups for rosbots
             put("./sourceme_rosbots.bash", "~/")
             run("echo 'source ~/sourceme_rosbots.bash' >> ~/.bashrc")
+
+
+
+
+
+    # Create a separate rosbots_catkin_ws outside of core ROS
+    rosbots_ws_dir = home_path + "/rosbots_catkin_ws"
+    if not fabfiles.exists(rosbots_ws_dir):
+        _fp("Need to create and init rosbots catkin workspace")
+        run("mkdir -p " + rosbots_ws_dir + "/src")
+        
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        with cd(rosbots_ws_dir + "/src"):
+            run(ws_dir + "/src/catkin/bin/catkin_init_workspace")
+
+        with cd(rosbots_ws_dir):
+            run(ws_dir + "/src/catkin/bin/catkin_make")
+            run(ws_dir + "/src/catkin/bin/catkin_make install")
+        env.shell = old_shell
+        
+        src_cmd = "source " + rosbots_ws_dir + "/devel/setup.bash"
+        if run("grep '" + src_cmd + "' ~/.bashrc", warn_only=True).succeeded:
+            _fp("Sourcing of ROSbots catkin ws env setup.bash is already in your bashrc")
+        else:
+            _pp("Going to add ROSbots catkin ws source setup into your bashrc")
+            run("echo '" + src_cmd + "\n' >> ~/.bashrc")
+
+
+            
+            
 
     _pp("All ROS components should be compiled and installed. Going to set up init.d to run ROSBots as a service.")
 

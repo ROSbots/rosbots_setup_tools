@@ -64,7 +64,8 @@ sleep 3
 
 
 mv /home/pi/rosbots_driver_motor_driver.log /home/pi/rosbots_driver_motor_driver.log.old
-nohup rosrun rosbots_driver motor_driver.py >> /home/pi/rosbots_driver_motor_driver.log 2>> /home/pi/rosbots_driver_motor_driver.log &
+# nohup rosrun rosbots_driver motor_driver.py >> /home/pi/rosbots_driver_motor_driver.log 2>> /home/pi/rosbots_driver_motor_driver.log &
 # nohup rostopic pub -r 0.5 /twist geometry_msgs/Twist "[1,0,0]" "[2,0,0]" > /home/pi/rostopic.log 2>&1 &
+nohup roslaunch rosbots_driver rosbots.launch >> /home/pi/rosbots_driver_motor_driver.log 2>> /home/pi/rosbots_driver_motor_driver.log &
 
 echo "Done with rosbots_startup script..." >> ${ROSBOTS_HOME}/roscore.log

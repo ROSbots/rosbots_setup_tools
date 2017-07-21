@@ -360,9 +360,9 @@ def _setup_ros_other_packages(rospkg):
 def step_4_setup_opencv_for_pi():
     _pp("Roughly following http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/")
 
-    _fp("Update system first")
-    sudo("apt-get update")
-    sudo("apt-get -y upgrade")
+    #_fp("Update system first")
+    #sudo("apt-get update")
+    #sudo("apt-get -y upgrade")
 
     _fp("Installing dependencies for OpenCV")
     sudo("apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libgtk2.0-dev libatlas-base-dev gfortran python2.7-dev python3-dev")

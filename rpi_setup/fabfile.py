@@ -67,11 +67,22 @@ INSTALL_DIR = WS_DIR + "/build/opt/ros/kinetic"
 def main_setup_ros_opencv_for_rosbots():
     step_1_setup_ros_for_pi()
     step_2_setup_ros_robot_packages()
-    step_3_setup_ros_rosbots_packages()
+    #step_3_setup_ros_rosbots_packages()
     step_4_setup_opencv_for_pi()
     step_5_setup_ros_robot_image_common_package()
     step_6_setup_ros_robot_vision_packages()
 
+    step_7_setup_ros_rosbots_packages()
+
+
+def main_setup_ros_opencv():
+    step_1_setup_ros_for_pi()
+    step_2_setup_ros_robot_packages()
+    
+    step_4_setup_opencv_for_pi()
+    step_5_setup_ros_robot_image_common_package()
+    step_6_setup_ros_robot_vision_packages()
+    
 def helloworld():
     run("ls -la")
 
@@ -238,7 +249,7 @@ def step_6_setup_ros_robot_vision_packages():
                 "https://github.com/ros-perception/vision_opencv.git", \
                 ["cv_bridge", "image_geometry", "vision_opencv"])
 
-def step_3_setup_ros_rosbots_packages():
+def step_7_setup_ros_rosbots_packages():
     run("echo 'Starting...'")
 
     home_path = run("pwd")
@@ -374,6 +385,10 @@ def step_4_setup_opencv_for_pi():
     home_path = run("pwd")
     git_path = home_path + "/gitspace"
 
+    _fp("Do we need to create gitspace folder?")
+    if not fabfiles.exists(git_path):
+        run("mkdir " + git_path)
+
     _fp("Git cloning OpenCV if need be")
     if not fabfiles.exists(git_path + "/opencv"):
         with cd(git_path):
@@ -430,6 +445,8 @@ def step_1_setup_ros_for_pi():
         sudo("apt-get -y upgrade")
     else:
         _fp("ros-lastest.list already exists... skipping set up")
+        sudo("apt-get update")
+        sudo("apt-get -y upgrade")
     
 
     # Install Bootstrap Dependencies

@@ -8,6 +8,9 @@ export PYTHONPATH="${ROSBOTS_HOME}/lib/python:${PYTHONPATH}"
 echo "Starting rosbots_shutdown script" >> ${ROSBOTS_HOME}/roscore.log
 
 
+echo "Killing roslaunch" >> ${ROSBOTS_HOME}/roscore.log
+killall roslaunch
+
 #killall nodes
 for i in $( rosnode list ); do
     echo "Killing node ${i}" >> ${ROSBOTS_HOME}/roscore.log
@@ -17,4 +20,5 @@ done
 #stop roscore
 echo "Killing roscore" >> ${ROSBOTS_HOME}/roscore.log
 killall roscore
+killall rosmaster
 echo "Done with shutdown script" >> ${ROSBOTS_HOME}/roscore.log

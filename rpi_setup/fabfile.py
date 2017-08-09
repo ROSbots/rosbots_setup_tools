@@ -314,7 +314,10 @@ def step_7_setup_ros_rosbots_packages():
 
     # Installing RPIO DMA PWM library
     with cd(git_path):
-        if not fabfiles.exists("RPIO"):
+        # Don't install RPIO library. May be causing non-deterministic
+        # kernel panic when used.
+        #if not fabfiles.exists("RPIO"):
+        if False:        
             _pp("Did not find RPIO library so downloading and setting up")
 
             # Old library does not support RPi 3

@@ -12,6 +12,7 @@ More details to come... the current not-so-short instructions:
 1. On a laptop / host machine type "arp -a" to see current IP addresses on your subnet
 1. Power on your Pi
 1. On a laptop / host machine type "arp -a" again to see what IP address your Pi was allocated
+1. ALTERNATIVELY, you can use "sudo nmap -sP x.x.x.0/24" where you replace x.x.x.0 with your network subnet
 1. ssh pi@<theipaddress> - default password "raspberry"
 1. Change your password via "passwd"
 1. Expand your filesystem via "sudo raspi-config" then selecting the expand your filesystem step.  Restart

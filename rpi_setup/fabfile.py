@@ -73,6 +73,7 @@ def main_setup_ros_opencv_for_rosbots():
     step_6_setup_ros_robot_vision_packages()
 
     step_7_setup_ros_rosbots_packages()
+    step_8_setup_mcu_uno_support()
 
 
 def main_setup_ros_opencv():
@@ -194,6 +195,74 @@ def setup_wifi_on_pi():
         sudo("echo '" + network_config + "' >> " + supplicant_fn)
 
     _fp("To get IP address of Pi, from a linux system - 'arp -a'")
+
+def step_8_setup_mcu_uno_support():
+    _pp("Plug in the UNO board to the RPi's USB port")
+
+    home_path = run("pwd")
+    git_path = home_path + "/gitspace"
+    rosbots_path = git_path + "/rosbots_driver"
+    pio_path = rosbots_path + "/platformio/rosbots_firmware"
+
+    rosserial_path = git_path + "/rosserial"
+    ws_dir = home_path + "/rosbots_catkin_ws" 
+    install_dir = home_path + INSTALL_DIR
+    main_ros_ws_dir = home_path + WS_DIR
+
+    # Old pip causes incompleteread importerror
+    sudo("easy_install --upgrade pip")
+    
+    # So we can access USB serial port
+    sudo("usermod -a -G dialout pi")
+
+    sudo("pip install -U platformio")
+
+    with cd(pio_path):
+        run("platformio run -e uno -t upload")
+
+    # We need diagnostic_msgs, but just download, we'll compile
+    # it on our own
+    _setup_ros_other_packages("diagnostic_msgs", run_rosdep=False)
+
+    # Download and install rosserial
+    if not fabfiles.exists(rosserial_path):
+        with cd(git_path):
+            run("git clone https://github.com/ros-drivers/rosserial.git")
+            
+        _fp("Creating symbolic link to main ros workspace")
+        with cd(ws_dir + "/src"):
+            if fabfiles.exists("rosserial"):
+                run("rm rosserial")
+            run("ln -s " + rosserial_path) 
+    else:
+        _fp("Found rosserial repo, just fetching top and rebasing")
+        with cd(rosbots_path):
+            run("git fetch origin")
+            run("git rebase origin/master")
+
+    with cd(ws_dir):
+        #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        run(main_ros_ws_dir + "/src/catkin/bin/catkin_make -j1")
+        run(main_ros_ws_dir + "/src/catkin/bin/catkin_make install -j1")
+        env.shell = old_shell
+
+    # Need diagnostic_msgs which rosserial_python needs
+    # catkin_make_isolated --pkg diagnostic_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space /home/pi/ros_catkin_ws/build/opt/ros/kinetic
+    subpackage = "diagnostic_msgs"
+    with cd(main_ros_ws_dir):
+        run("./src/catkin/bin/catkin_make_isolated --pkg " + subpackage + " --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j1")
+            
+    #Update pip if necessary
+    sudo("easy_install --upgrade pip")
+    
+    # Rerun the init script
+    sudo("systemctl stop rosbots")
+    sudo("systemctl start rosbots")
+
+    
 
 def step_5_setup_ros_robot_image_common_package():
     _pp("Usually done after you set up OpenCV and the other robot and rosbot packages.  This mainly sets up image_transport.")
@@ -337,7 +406,7 @@ def step_7_setup_ros_rosbots_packages():
     sudo("systemctl start rosbots")
     
 
-def _setup_ros_other_packages(rospkg):
+def _setup_ros_other_packages(rospkg, run_rosdep=True):
     run("echo 'Starting...'")
 
     home_path = run("pwd")
@@ -364,11 +433,12 @@ def _setup_ros_other_packages(rospkg):
         
         _pp("Did the wstool update correctly?  If so, we are going to update dependencies.")
 
-        run("rosdep install --from-paths src --ignore-src --rosdistro kinetic -y -r --os=debian:jessie")
+        if run_rosdep:
+            run("rosdep install --from-paths src --ignore-src --rosdistro kinetic -y -r --os=debian:jessie")
 
-        _pp("Did the dependencies update ok?  If so, let's compile the new packages.")
+            _pp("Did the dependencies update ok?  If so, let's compile the new packages.")
 
-        run("./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space " + home_path + INSTALL_DIR + " -j1")
+            run("./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space " + home_path + INSTALL_DIR + " -j1")
 
 
 def step_4_setup_opencv_for_pi():

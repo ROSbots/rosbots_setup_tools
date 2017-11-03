@@ -424,11 +424,11 @@ def _setup_ros_other_packages(rospkg, run_rosdep=True):
 
         _pp("Did rosinstall generator create the install file correctly? If so, we're going to merge and update the workspace. (If there are duplicate packages, hit DELETE and REPLACE!)")
         
-        run("wstool merge -t src " + fn)
+        run("wstool merge -y -t src " + fn)
 
         _pp("Did the wstool merge correctly?  If so, we are going to update on the install file for the workspace.")
         
-        run("wstool update -t src")
+        run("wstool update --delete-changed-uris -t src")
 
         
         _pp("Did the wstool update correctly?  If so, we are going to update dependencies.")
@@ -449,7 +449,10 @@ def step_4_setup_opencv_for_pi():
     #sudo("apt-get -y upgrade")
 
     _fp("Installing dependencies for OpenCV")
-    sudo("apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libgtk2.0-dev libatlas-base-dev gfortran python2.7-dev python3-dev")
+
+    # Need to install libgtk2.0 first in Stretch?!?
+    sudo("apt-get install -y libgtk2.0-dev")
+    sudo("apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libatlas-base-dev gfortran python2.7-dev python3-dev")
 
     sudo("apt-get install -y python-pip")
     sudo("sudo pip install numpy")
@@ -512,8 +515,12 @@ def step_1_setup_ros_for_pi():
     
     # Setup ROS Repositories
     if not fabfiles.exists("/etc/apt/sources.list.d/ros-latest.list"):
+
+        # Raspbian Stretch does not have dirmngr installed by default. This
+        # is needed for apt-key
+        sudo("apt-get -y install dirmngr")
         sudo("sh -c 'echo \"deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main\" > /etc/apt/sources.list.d/ros-latest.list'")
-        sudo("apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116")
+        sudo("sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116") #apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116")
         sudo("apt-get update")
         sudo("apt-get -y upgrade")
     else:
@@ -549,7 +556,7 @@ def step_1_setup_ros_for_pi():
             run("wstool init -j 2 src kinetic-ros_comm-wet.rosinstall")
         else:
             _pp("Looks like you had already tried 'wstool init...', so continuing with 'wstool update...'")
-            run("wstool update -j 2 -t src")
+            run("wstool update --delete-changed-uris -j 2 -t src")
 
         rval = _get_input("Did wstool download everything ok?\n(NO to quit & resolve, ENTER to continue)")
         if rval == "NO":

@@ -209,6 +209,18 @@ def step_8_setup_mcu_uno_support():
     install_dir = home_path + INSTALL_DIR
     main_ros_ws_dir = home_path + WS_DIR
 
+    # Need nav_msgs compiled
+    with cd(main_ros_ws_dir):
+        #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        #run(main_ros_ws_dir + "/src/catkin/bin/catkin_make -j1 --pkg nav_msgs")
+        #run(main_ros_ws_dir + "/src/catkin/bin/catkin_make install -j1 --pkg nav_msgs")
+        run("./src/catkin/bin/catkin_make_isolated --pkg actionlib_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        run("./src/catkin/bin/catkin_make_isolated --pkg nav_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        env.shell = old_shell
+
     # Old pip causes incompleteread importerror
     sudo("easy_install --upgrade pip")
     
@@ -217,6 +229,9 @@ def step_8_setup_mcu_uno_support():
 
     sudo("pip install -U platformio")
 
+    _fp("=============")
+    _pp("If this is the first time running setup, the next step will most likely fail since you need a reboot to enable the UNO drivers. If it fails, reboot and run this step again.")
+    _fp("=============\n")
     with cd(pio_path):
         run("platformio run -e uno -t upload")
 
@@ -236,9 +251,9 @@ def step_8_setup_mcu_uno_support():
             run("ln -s " + rosserial_path) 
     else:
         _fp("Found rosserial repo, just fetching top and rebasing")
-        with cd(rosbots_path):
+        with cd(rosserial_path):
             run("git fetch origin")
-            run("git rebase origin/master")
+            run("git rebase origin/jade-devel")
 
     with cd(ws_dir):
         #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
@@ -471,8 +486,8 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv.git")
         with cd(git_path + "/opencv"):
             run("git tag -l")
-            _pp("We are compiling 3.2.0 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.2.0_branch tags/3.2.0")
+            _pp("We are compiling 3.3.1 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.3.1_branch tags/3.3.1")
 
     opencv_contrib_path = git_path + "/opencv_contrib"
     if not fabfiles.exists(opencv_contrib_path):
@@ -480,8 +495,8 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv_contrib.git")
         with cd(opencv_contrib_path):
             run("git tag -l")
-            _pp("We are compiling 3.2.0 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.2.0_branch tags/3.2.0")
+            _pp("We are compiling 3.3.1 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.3.1_branch tags/3.3.1")
             
     _fp("Setting up OpenCV cmake if need be")
     if not fabfiles.exists(git_path + "/opencv/build"):
@@ -504,6 +519,25 @@ def step_4_setup_opencv_for_pi():
         sudo("make install")
         sudo("ldconfig")
 
+def step_x_setup_ros_for_ubuntu_mate_pi():
+    run("echo 'Roughly following http://wiki.ros.org/kinetic/Installation/Ubuntu'")
+    _pp("* If you need to do raspi-config stuff, CTRL-C out and do that before running this script")
+    
+    # Setup ROS Repositories
+    if not fabfiles.exists("/etc/apt/sources.list.d/ros-latest.list"):
+        sudo("apt-get update")
+        sudo("sh -c 'echo \"deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main\" > /etc/apt/sources.list.d/ros-latest.list'")
+        sudo("apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116") #apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116")
+        sudo("apt-get update")
+        sudo("apt-get -y upgrade")
+    else:
+        _fp("ros-lastest.list already exists... skipping set up")
+        sudo("apt-get update")
+        sudo("apt-get -y upgrade")
+
+    sudo("apt-get install -y ros-kinetic-ros-base")
+    
+
 def step_1_setup_ros_for_pi():
     global WS_DIR
     global INSTALL_DIR
@@ -518,6 +552,7 @@ def step_1_setup_ros_for_pi():
 
         # Raspbian Stretch does not have dirmngr installed by default. This
         # is needed for apt-key
+        sudo("apt-get update")
         sudo("apt-get -y install dirmngr")
         sudo("sh -c 'echo \"deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main\" > /etc/apt/sources.list.d/ros-latest.list'")
         sudo("sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116") #apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116")

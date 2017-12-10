@@ -13,6 +13,8 @@ More details to come... the current not-so-short instructions:
 1. Set up new ssh keys
  1. sudo rm /etc/ssh/ssh_host_*
  1. sudo dpkg-reconfigure openssh-server
+1. sudo raspi-config - expand your filesystem to use the entire SD card.
+1. reboot
 1. rosnode list (to make sure all is working)
 
 ## Setting up a new Raspberry Pi

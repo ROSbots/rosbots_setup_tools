@@ -3,8 +3,9 @@ ROSbots Setup Tools
 
 More details to come... the current not-so-short instructions:
 
-## Using existing ROSbots image
-1. On a Linux or Mac machine:
+## Using existing ROSbots image (after you've downloaded it)
+1. Unzip the image file
+1. On a Linux or Mac machine, dd the image to your micro-sd card mapped to rdiskN (replace N with the actual number):
   1. sudo dd if=rosbots-xxx.img of=/dev/rdiskN conv=sync
 1. Insert the micro-sd into your RPi then power up
 1. ssh pi@xxx.xxx.xxx.xxx (IP address assigned to your RPi)

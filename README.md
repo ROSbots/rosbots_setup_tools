@@ -3,20 +3,16 @@ ROSbots Setup Tools
 
 More details to come... the current not-so-short instructions:
 
-## Shrinking ROSbots image, burning a shrunken ROSbots Raspbian Image to file
-1. Use gparted to shrink on Linux machine
- 1. If there's an error, then resize2fs manually with "-f" flag
- 1. May need to go back to gparted to shrink again to get the partition table updated
-1. Burn sd card image (only first 9GB in this case) to file
- 1. sudo dd bs=1m of=rosbots-ros-opencv-stretch-lite-2017-11-29.img if=/dev/rdisk2 count=9000 conv=sync
-
 ## Using existing ROSbots image
-1. sudo dd if=rosbots-xxx.img of=/dev/rdiskN conv=sync
-1. ssh pi@xxx.xxx.xxx.xxx
-1. password - "rosbots!"
+1. On a Linux or Mac machine:
+  1. sudo dd if=rosbots-xxx.img of=/dev/rdiskN conv=sync
+1. Insert the micro-sd into your RPi then power up
+1. ssh pi@xxx.xxx.xxx.xxx (IP address assigned to your RPi)
+1. password - rosbots!
 1. Set up new ssh keys
  1. sudo rm /etc/ssh/ssh_host_*
  1. sudo dpkg-reconfigure openssh-server
+1. rosnode list (to make sure all is working)
 
 ## Setting up a new Raspberry Pi
 
@@ -70,6 +66,16 @@ When the step completes:
 
 1. SSH into your Pi
 1. Type "rosnode list" to see the current ROS nodes running.
+
+
+
+## Shrinking ROSbots image, burning a shrunken ROSbots Raspbian Image to file
+1. Use gparted to shrink on Linux machine
+  1. If there's an error, then resize2fs manually with "-f" flag
+  1. May need to go back to gparted to shrink again to get the partition table updated
+1. Burn sd card image (only first 9GB in this case) to file
+  1. sudo dd bs=1m of=rosbots-ros-opencv-stretch-lite-2017-11-29.img if=/dev/rdisk2 count=9000 conv=sync
+
 
 ================
 

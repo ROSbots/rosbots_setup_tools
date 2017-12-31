@@ -469,6 +469,9 @@ def step_4_setup_opencv_for_pi():
     sudo("apt-get install -y libgtk2.0-dev")
     sudo("apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libatlas-base-dev gfortran python2.7-dev python3-dev")
 
+    # Needed for web_video_server and perhaps help with OpenCV support as well
+    sudo("apt-get install -y libavutil-dev")
+
     sudo("apt-get install -y python-pip")
     sudo("sudo pip install numpy")
     sudo("sudo pip install --upgrade numpy")

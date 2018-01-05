@@ -74,6 +74,7 @@ def main_setup_ros_opencv_for_rosbots():
 
     step_7_setup_ros_rosbots_packages()
     step_8_setup_mcu_uno_support()
+    step_9_setup_mcu_uno_support_part_2()
 
 
 def main_setup_ros_opencv():
@@ -209,6 +210,10 @@ def step_8_setup_mcu_uno_support():
     install_dir = home_path + INSTALL_DIR
     main_ros_ws_dir = home_path + WS_DIR
 
+    # Just download, we'll build it isolated later
+    _setup_ros_other_packages("actionlib_msgs", run_rosdep=False)
+    _setup_ros_other_packages("nav_msgs", run_rosdep=False)
+
     # Need nav_msgs compiled
     with cd(main_ros_ws_dir):
         #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
@@ -229,9 +234,27 @@ def step_8_setup_mcu_uno_support():
 
     sudo("pip install -U platformio")
 
+    sudo("pip install -U backports.functools_lru_cache")
+
     _fp("=============")
     _pp("If this is the first time running setup, the next step will most likely fail since you need a reboot to enable the UNO drivers. If it fails, reboot and run this step again.")
     _fp("=============\n")
+
+
+
+def step_9_setup_mcu_uno_support_part_2():
+    _pp("Plug in the UNO board to the RPi's USB port")
+
+    home_path = run("pwd")
+    git_path = home_path + "/gitspace"
+    rosbots_path = git_path + "/rosbots_driver"
+    pio_path = rosbots_path + "/platformio/rosbots_firmware"
+
+    rosserial_path = git_path + "/rosserial"
+    ws_dir = home_path + "/rosbots_catkin_ws" 
+    install_dir = home_path + INSTALL_DIR
+    main_ros_ws_dir = home_path + WS_DIR
+    
     with cd(pio_path):
         run("platformio run -e uno -t upload")
 

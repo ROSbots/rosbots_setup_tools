@@ -34,3 +34,21 @@ then
 else    
     echo 'As ROS slave node, you will also need to "export ROS_MASTER_URI=http://<master_ip>:11311"'
 fi
+
+
+
+
+###################
+# Functions
+function upload_firmware() {
+    if [ "$1" == "" ]
+    then
+        echo "Please specify a platformio directory (where a platform.ini lives)"
+    else
+        echo "Compiling then uploading $1"
+        sudo systemctl stop rosbots
+        cd $1
+        platformio run -e uno -t upload
+        sudo systemctl start rosbots
+    fi
+}

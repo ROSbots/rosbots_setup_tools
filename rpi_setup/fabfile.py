@@ -64,6 +64,11 @@ def _pp(msg):
 WS_DIR = "/ros_catkin_ws"
 INSTALL_DIR = WS_DIR + "/build/opt/ros/kinetic"
 
+def main_setup_only_rosbots_components():
+    step_7_setup_ros_rosbots_packages()
+    step_8_setup_mcu_uno_support()
+    step_9_setup_mcu_uno_support_part_2()
+
 def main_setup_ros_opencv_for_rosbots():
     step_1_setup_ros_for_pi()
     step_2_setup_ros_robot_packages()

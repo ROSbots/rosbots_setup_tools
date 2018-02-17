@@ -70,7 +70,10 @@ function update_rosbots_git_repos() {
     echo "---"
     echo "Updating the latest source_rosbots.bash file with latest utility funcs"
     cd "/home/pi"
+    mv sourceme_rosbots.bash sourme_rosbots.bash.old
     wget https://raw.githubusercontent.com/ROSbots/rosbots_setup_tools/master/rpi_setup/sourceme_rosbots.bash
+    source .bashrc
+    
     cd "Latest bash source for rosbots updated!"
     
 }

@@ -52,3 +52,25 @@ function upload_firmware() {
         sudo systemctl start rosbots
     fi
 }
+
+
+function update_rosbots_git_repos() {
+    gitdir="/home/pi/gitspace/rosbots_driver/"
+    echo "cd ${gitdir}"
+    cd ${gitdir}
+    echo "Fetching from origin (ie Github)..."
+    git fetch origin
+    echo "git stash"
+    git stash
+    echo "git rebase origin/master"
+    git rebase origin/master
+    echo "git stash pop"
+    git stash pop
+    echo "Unless there's a conflict, your rosbots ROS scripts should be up to date!"
+    echo "---"
+    echo "Updating the latest source_rosbots.bash file with latest utility funcs"
+    cd "/home/pi"
+    wget https://raw.githubusercontent.com/ROSbots/rosbots_setup_tools/master/rpi_setup/sourceme_rosbots.bash
+    cd "Latest bash source for rosbots updated!"
+    
+}

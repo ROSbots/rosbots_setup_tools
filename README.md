@@ -6,16 +6,18 @@ More details to come... the current not-so-short instructions:
 ## Use our existing ROSbots Raspbian+ROS+OpenCV image (after you've downloaded it)
 1. Unzip the image file
 1. On a Linux or Mac machine, dd the image to your micro-sd card mapped to rdiskN (replace N with the actual number):
-  1. sudo dd if=rosbots-xxx.img of=/dev/rdiskN conv=sync
+   1. sudo dd if=rosbots-xxx.img of=/dev/rdiskN conv=sync
 1. Insert the micro-sd into your RPi then power up
 1. ssh pi@xxx.xxx.xxx.xxx (IP address assigned to your RPi)
 1. password - rosbots!
 1. Set up new ssh keys
- 1. sudo rm /etc/ssh/ssh_host_*
- 1. sudo dpkg-reconfigure openssh-server
+   1. sudo rm /etc/ssh/ssh_host_*
+   1. sudo dpkg-reconfigure openssh-server
 1. sudo raspi-config - expand your filesystem to use the entire SD card.
 1. reboot
 1. rosnode list (to make sure all is working)
+1. Do the step defined in "Set up ROSbots setup tools" below
+1. Do the step defined in "With our pre-build Raspbian ROS+OpenCV image, set up ROSbots modules" below
 
 ## Setting up a new Raspberry Pi
 
@@ -44,6 +46,16 @@ The fabfile "pushes" setup commands to your Pi via ssh to setup and compile the 
   1. Clone this repo
   1. cd rpi_setup
   1. pip install -r requirement.txt
+
+## With our pre-build Raspbian ROS+OpenCV image, set up ROSbots modules
+
+From your host machine:
+
+1. cd rpi_setup
+1. Type "fab -H <ipaddressforyourpi> main\_setup\_only\_rosbots\_components" - enter your password for your Pi
+1. ... wait for completion (about 30 minutes)
+1. rosnode list and you should see a /uno_serial_node running
+1. Try our first tutorial on Applying [Coursera's Control of Mobile Robots using ROS and ROSbots](https://medium.com/@rosbots/apply-coursera-control-of-mobile-robots-with-ros-and-rosbots-part-1-777a51f63617).
 
 ## To Set up Wifi on Your Raspberry Pi
 

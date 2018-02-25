@@ -20,9 +20,11 @@ More details to come... the current not-so-short instructions:
    1. sudo dpkg-reconfigure openssh-server
 1. IMPORTANT - Set up new password. While ssh'd into your Pi, type:
    1. passwd
-1. Expand your filesystem to use entire SD card space. While ssh'd into your Pi, type:
-   1. sudo raspi-config 
-1. reboot via "sudo shutdown -R now"
+1. Enable your Pi Camera and expand your filesystem to use entire SD card space. While ssh'd into your Pi, type:
+   1. sudo raspi-config
+      1. Select *Interfacing Options* -> *Camera* -> Enable
+      1. Select *Advanced Options* -> *Expand Filesystems*
+      1. Finish and Reboot
 1. Count to 60, ssh back into your Pi. To make sure ROS is running, type:
    1. rosnode list 
 1. Do the step defined in "Set up ROSbots setup tools..." below
@@ -51,10 +53,10 @@ On your host machine (not your Pi - on your laptop), set up the ROSbots setup to
 From your host machine (ie laptop):
 
 1. cd into the rpi_setup/ folder directory in the repository.
-1. Type "fab -H <ipaddressforyourpi> setup\_wifi\_on\_pi" - enter your password for your Pi
+1. Type "fab -H *ipaddressforyourpi* setup\_wifi\_on\_pi" - enter your password for your Pi
 1. Answer the questions about your WiFi network (select a 2.4 GHz network for greater range)
 1. With your ethernet still connected into your Pi, SSH into your Pi. While ssh'd into your Pi, reboot via:
-   1. sudo shutdown -R now
+   1. sudo shutdown -r now
    1. Count to 60 to make sure the Pi has rebooted.
 1. Unplug your Pi's ethernet cable.
 1. Discover your Pi's new IP address assigned to its Wifi module:
@@ -67,7 +69,7 @@ From your host machine (ie laptop):
 From your host machine (ie laptop):
 
 1. cd into the rpi_setup/ folder directory in the repository.
-1. Type "fab -H <ipaddressforyourpi> main\_setup\_only\_rosbots\_components" - enter your password for your Pi
+1. Type "fab -H *ipaddressforyourpi* main\_setup\_only\_rosbots\_components" - enter your password for your Pi
 1. ... wait for completion (about 30 minutes)
 1. rosnode list and you should see a /uno_serial_node running
 1. Try our first tutorial on Applying [Coursera's Control of Mobile Robots using ROS and ROSbots](https://medium.com/@rosbots/apply-coursera-control-of-mobile-robots-with-ros-and-rosbots-part-1-777a51f63617).

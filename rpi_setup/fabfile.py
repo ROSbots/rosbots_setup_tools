@@ -171,12 +171,15 @@ def setup_wifi_on_pi():
     supplicant_fn = "/etc/wpa_supplicant/wpa_supplicant.conf"
     run("echo 'Starting...'")
     
-    if run("grep 'country=GB' " + supplicant_fn, warn_only=True).succeeded:
-        pass
-    else:
-        _fp("")
-        _pp("You should probably set 'country=US' in your supplicant file " + \
-            supplicant_fn + " when you get a chance...")
+    #if run("grep 'country=GB' " + supplicant_fn, warn_only=True).succeeded:
+    #    pass
+    #else:
+    #    _fp("")
+    #    _pp("You should probably set 'country=US' in your supplicant file " + \
+    #        supplicant_fn + " when you get a chance...")
+
+    wifi_reg_domain = _get_input("What is your country's wifi regulatory domain (ISO 3166 alpha2 country code, ie 'US')?", force_need_query=True)
+    _fp(wifi_reg_domain)
 
     ssid_name = _get_input("What is the SSID?", force_need_query=True)
     _fp(ssid_name)
@@ -191,7 +194,8 @@ def setup_wifi_on_pi():
         _fp(name)
 
         _fp("Adding the network you specified into " + supplicant_fn)
-        network_config = "\n\n" + \
+        network_config = "country=" + wifi_reg_domain + "\n" + \
+                         "\n\n" + \
                          "network={\n" + \
                          "    ssid=\"" + ssid_name + "\"\n" + \
                          "    psk=\"" + wpa_pwd + "\"\n" + \
@@ -443,7 +447,10 @@ def step_7_setup_ros_rosbots_packages():
                 run("export PYTHONPATH=" + home_path + "/lib/python; python setup.py -v install --home " + home_path)
 
                 _pp("Did RPIO install correctly into " + home_path + "?")
-
+                
+    # Update with newest bashrc for rosbots
+    put("./sourceme_rosbots.bash", "~/")
+                
     # Rerun the init script
     sudo("systemctl stop rosbots")
     sudo("systemctl start rosbots")
@@ -517,8 +524,8 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv.git")
         with cd(git_path + "/opencv"):
             run("git tag -l")
-            _pp("We are compiling 3.3.1 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.3.1_branch tags/3.3.1")
+            _pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.4.1_branch tags/3.4.1")
 
     opencv_contrib_path = git_path + "/opencv_contrib"
     if not fabfiles.exists(opencv_contrib_path):
@@ -526,8 +533,8 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv_contrib.git")
         with cd(opencv_contrib_path):
             run("git tag -l")
-            _pp("We are compiling 3.3.1 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.3.1_branch tags/3.3.1")
+            _pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.4.1_branch tags/3.4.1")
             
     _fp("Setting up OpenCV cmake if need be")
     if not fabfiles.exists(git_path + "/opencv/build"):
@@ -546,7 +553,7 @@ def step_4_setup_opencv_for_pi():
     # Compile
     _fp("Compiling OpenCV...")
     with cd(git_path + "/opencv/build"):
-        run("make -j2")
+        run("make -j1")
         sudo("make install")
         sudo("ldconfig")
 

@@ -55,7 +55,11 @@ From your host machine (ie laptop):
 1. cd into the rpi_setup/ folder directory in the repository.
 1. Type "fab -H *ipaddressforyourpi* setup\_wifi\_on\_pi" - enter your password for your Pi
 1. Answer the questions about your WiFi network (select a 2.4 GHz network for greater range)
-1. With your ethernet still connected into your Pi, SSH into your Pi. While ssh'd into your Pi, reboot via:
+1. With your ethernet still connected into your Pi, SSH into your Pi. While ssh'd into your Pi, turn on then off the wlan0 interface:
+   1. sudo ip link set wlan0 down
+   1. sudo ip link set wlan0 up
+   1. (wait about 1-2 minutes for wifi to connect to your access point)
+1. If above doesn't work, then try reboot via:
    1. sudo shutdown -r now
    1. Count to 60 to make sure the Pi has rebooted.
 1. Unplug your Pi's ethernet cable.

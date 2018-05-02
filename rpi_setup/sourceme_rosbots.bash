@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# Let us know if we are in a screen session
+if [ -n "$STY" ]; then export PS1="(screen) $PS1"; fi
+
 ###################
 # Functions
 function upload_firmware() {

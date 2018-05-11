@@ -16,9 +16,9 @@ More details to come... the current not-so-short instructions:
 1. ssh pi@xxx.xxx.xxx.xxx (IP address assigned to your RPi)
    1. password - rosbots!
 1. Once logged in, run the following commands in the ssh terminal:
-   1. update_rosbots_git_repos
+   1. **update_rosbots_git_repos**
       1. This will retrieve our latest setup routines
-   1. initialize_rosbots_image
+   1. **initialize_rosbots_image**
       1. This will:
          1. Set up new SSH keys
          1. Ask you for a new password
@@ -27,11 +27,11 @@ More details to come... the current not-so-short instructions:
             1. Select *Advanced Options* -> *Expand Filesystems*
             1. Finish and Reboot
 1. Count to 60, ssh back into your Pi. To make sure ROS is running, type:
-   1. rosnode list
+   1. **rosnode list**
       1. You should see - /rosout 
-1. If you are using a ROSbots robot, complete the ROSbots software setup (will eventually ask you for your ROSbots RPi password. After that, it'll take a while to complete).
-   1. From an ssh terminal into your RPi, type:
-      1. setup_rosbots_code
+1. If you are using a ROSbots robot, complete the ROSbots software setup. From an ssh terminal into your RPi, type:
+   1. **setup_rosbots_code**
+      1. After setting up some other packages (about 30 seconds), it'll ask you for your RPi password. Once you finished that, you can go grab a cup of coffee. When you return, setup should be complete.
    1. When complete, type - rosnode list
       1. You should see /rosout and /uno_serial_node outputted
 

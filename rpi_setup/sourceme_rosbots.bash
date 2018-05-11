@@ -5,6 +5,13 @@ if [ -n "$STY" ]; then export PS1="(screen) $PS1"; fi
 
 ###################
 # Functions
+function initialize_rosbots_image() {
+    sudo rm /etc/ssh/ssh_host_*
+    sudo dpkg-reconfigure openssh-server
+    passwd
+    sudo raspi-config
+}
+
 function upload_firmware() {
     if [ "$1" == "" ]
     then

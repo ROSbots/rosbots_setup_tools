@@ -220,7 +220,7 @@ def step_8_setup_mcu_uno_support():
     main_ros_ws_dir = home_path + WS_DIR
 
     # Just download, we'll build it isolated later
-    _setup_ros_other_packages("actionlib_msgs", run_rosdep=False)
+    #_setup_ros_other_packages("actionlib_msgs", run_rosdep=False)
     _setup_ros_other_packages("nav_msgs", run_rosdep=False)
 
     # Need nav_msgs compiled
@@ -231,7 +231,7 @@ def step_8_setup_mcu_uno_support():
         env.shell = '/bin/bash -l -c -i'
         #run(main_ros_ws_dir + "/src/catkin/bin/catkin_make -j1 --pkg nav_msgs")
         #run(main_ros_ws_dir + "/src/catkin/bin/catkin_make install -j1 --pkg nav_msgs")
-        run("./src/catkin/bin/catkin_make_isolated --pkg actionlib_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        #run("./src/catkin/bin/catkin_make_isolated --pkg actionlib_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
         run("./src/catkin/bin/catkin_make_isolated --pkg nav_msgs --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
         env.shell = old_shell
 
@@ -241,6 +241,9 @@ def step_8_setup_mcu_uno_support():
     # So we can access USB serial port
     sudo("usermod -a -G dialout pi")
 
+    # Some requirements
+    sudo("pip install -U testresources")
+    
     sudo("pip install -U platformio")
 
     sudo("pip install -U backports.functools_lru_cache")
@@ -312,6 +315,10 @@ def step_9_setup_mcu_uno_support_part_2():
     
 
 def step_5_setup_ros_robot_image_common_package():
+    home_path = run("pwd")
+    install_dir = home_path + INSTALL_DIR
+    main_ros_ws_dir = home_path + WS_DIR
+
     _pp("Usually done after you set up OpenCV and the other robot and rosbot packages.  This mainly sets up image_transport.")
     _setup_ros_other_packages("image_common")
 
@@ -321,6 +328,7 @@ def step_2_setup_ros_robot_packages():
 
     _setup_ros_other_packages("geometry_msgs")
     _setup_ros_other_packages("teleop_twist_keyboard")
+    
 
 def _setup_ros_packages_from_git(ros_package_name, git_url, subpackage_list):
     run("echo 'Starting...'")
@@ -374,6 +382,23 @@ def step_7_setup_ros_rosbots_packages():
     ws_dir = home_path + "/rosbots_catkin_ws" # home_path + WS_DIR
     install_dir = home_path + INSTALL_DIR
     main_ros_ws_dir = home_path + WS_DIR
+
+    
+    # Just download tf and geometry2, which includes tf2.
+    # We'll compile it ourselves later
+    _setup_ros_other_packages("geometry", run_rosdep=False)
+    _setup_ros_other_packages("geometry2", run_rosdep=False)
+    
+    # Need tf and tf2 compiled
+    with cd(main_ros_ws_dir):
+        #run("./src/catkin/bin/catkin_make_isolated --pkg rosbots_driver --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        old_shell = env.shell
+        env.shell = '/bin/bash -l -c -i'
+        package_list = [
+            "angles", "actionlib_msgs", "actionlib", "tf2_msgs", "tf2", "tf2_py", "tf2_ros", "tf"]
+        for pkg in package_list:
+            run("./src/catkin/bin/catkin_make_isolated --pkg " + pkg + " --install -DCMAKE_BUILD_TYPE=Release --install-space " + install_dir + " -j2")
+        env.shell = old_shell
 
     sudo("apt-get install -y python-pip")
     sudo("pip install picamera")

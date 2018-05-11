@@ -6,10 +6,33 @@ if [ -n "$STY" ]; then export PS1="(screen) $PS1"; fi
 ###################
 # Functions
 function initialize_rosbots_image() {
+    echo "Creating new SSH keys..."
     sudo rm /etc/ssh/ssh_host_*
     sudo dpkg-reconfigure openssh-server
+    echo "Set up a new password"
     passwd
+    echo "Expand your filesystem, then reboot"
     sudo raspi-config
+}
+
+function setup_rosbots_code() {
+    echo "Installing Python Fabric if need be..."
+    sudo apt-get install -y fabric
+
+    echo "Git cloning rosbots set up code..."
+    gitdir="/home/pi/gitspace/"
+    echo "cd ${gitdir}"
+    cd ${gitdir}
+
+    git clone https://github.com/ROSbots/rosbots_setup_tools.git
+
+    cd rosbots_setup_tools/rpi_setup/
+    fab -H 127.0.0.1 main_setup_only_rosbots_components
+
+    sleep 60
+
+    cd ~
+    rosnode list
 }
 
 function upload_firmware() {

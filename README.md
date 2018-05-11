@@ -14,37 +14,26 @@ More details to come... the current not-so-short instructions:
 1. Find the IP address assigned to you Raspberry Pi's ethernet module:
    1. On a Mac or Linux system, that's easily discoverable via "sudo nmap -sP x.x.x.0/24" where you replace x.x.x.0 with your network subnet. 
 1. ssh pi@xxx.xxx.xxx.xxx (IP address assigned to your RPi)
-1. password - rosbots!
-1. IMPORTANT - Set up new ssh keys. While ssh'd into your Pi, type:
-   1. sudo rm /etc/ssh/ssh_host_*
-   1. sudo dpkg-reconfigure openssh-server
-1. IMPORTANT - Set up new password. While ssh'd into your Pi, type:
-   1. passwd
-1. Enable your Pi Camera and expand your filesystem to use entire SD card space. While ssh'd into your Pi, type:
-   1. sudo raspi-config
-      1. Select *Interfacing Options* -> *Camera* -> Enable
-      1. Select *Advanced Options* -> *Expand Filesystems*
-      1. Finish and Reboot
+   1. password - rosbots!
+1. Once logged in, run the following commands in the ssh terminal:
+   1. update_rosbots_git_repos
+      1. This will retrieve our latest setup routines
+   1. initialize_rosbots_image
+      1. This will:
+         1. Set up new SSH keys
+         1. Ask you for a new password
+         1. Run raspi-config where you should enable your Pi Camera and expand your filesystem to use entire SD card space.
+            1. Select *Interfacing Options* -> *Camera* -> Enable
+            1. Select *Advanced Options* -> *Expand Filesystems*
+            1. Finish and Reboot
 1. Count to 60, ssh back into your Pi. To make sure ROS is running, type:
-   1. rosnode list 
-1. Do the step defined in "Set up ROSbots setup tools..." below
-1. Do the step defined in "Set up Wifi on Your Raspberry Pi" below if you want Wifi for your Pi.
-1. Do the step defined in "With our pre-build Raspbian ROS+OpenCV image, set up ROSbots modules" below
-
-
-
-## Set up ROSbots setup tools on your host machine (ie laptop)
-You will drive the ROSbots setup from a host laptop (not your Raspberry Pi) using a [Python Fabric](http://www.fabfile.org/) recipe fabfile.py file.  
-
-The fabfile "pushes" setup commands from your laptop to your Pi via ssh to setup and compile the remaining ROS, OpenCV and ROSbots modules necessary to get your ROSbots set up.
-
-On your host machine (not your Pi - on your laptop), set up the ROSbots setup tool environment:
-1. Install python and pip (preferably using [virtualenvwrapper](https://pypi.python.org/pypi/virtualenvwrapper)) 
-1. Clone this very [ROSbots set up tools Git repository](https://github.com/ROSbots/rosbots_setup_tools) if you have not already done so.
-1. cd into the rpi_setup/ folder directory in the repository.
-1. pip install -r requirement.txt
-   1. This sets up **on your host machine (ie laptop)** - the python modules needed to "push" commands to your ROSbots' Raspberry Pi.
-
+   1. rosnode list
+      1. You should see - /rosout 
+1. If you are using a ROSbots robot, complete the ROSbots software setup (will eventually ask you for your ROSbots RPi password. After that, it'll take a while to complete).
+   1. From an ssh terminal into your RPi, type:
+      1. setup_rosbots_code
+   1. When complete, type - rosnode list
+      1. You should see /rosout and /uno_serial_node outputted
 
 
 

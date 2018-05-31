@@ -6,6 +6,9 @@ if [ -n "$STY" ]; then export PS1="(screen) $PS1"; fi
 ###################
 # Functions
 function initialize_rosbots_image() {
+    # Some empty garbage folders left out from 2018-04-18 image creation
+    cd ~
+    rmdir because/ country/ disabled/ is/ not/ set.^M/ the/ Wi-Fi/
     echo "Creating new SSH keys..."
     sudo rm /etc/ssh/ssh_host_*
     sudo dpkg-reconfigure openssh-server

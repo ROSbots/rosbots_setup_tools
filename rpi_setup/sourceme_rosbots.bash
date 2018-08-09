@@ -6,9 +6,7 @@ if [ -n "$STY" ]; then export PS1="(screen) $PS1"; fi
 ###################
 # Functions
 function initialize_rosbots_image() {
-    # Some empty garbage folders left out from 2018-04-18 image creation
     cd ~
-    rmdir because/ country/ disabled/ is/ not/ set.^M/ the/ Wi-Fi/
     echo "Creating new SSH keys..."
     sudo rm /etc/ssh/ssh_host_*
     sudo dpkg-reconfigure openssh-server
@@ -84,8 +82,9 @@ function check_wifi_restart_rosbots {
     else
         ssid=$1
         conn=`sudo iwconfig wlan0 | grep -i "${ssid}"`
+        wlan0ip=`ifconfig wlan0 | grep -i inet`
 
-        if [[ "${conn}" = *"${ssid}"* ]]
+        if [[ ("${conn}" = *"${ssid}"*) && ("$wlan0ip" != "") ]]
         then
             echo "Connection to ${ssid} is live"                              
         else            

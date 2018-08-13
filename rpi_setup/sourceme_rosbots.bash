@@ -82,7 +82,7 @@ function check_wifi_restart_rosbots {
     else
         ssid=$1
         conn=`sudo iwconfig wlan0 | grep -i "${ssid}"`
-        wlan0ip=`ifconfig wlan0 | grep -i inet`
+        wlan0ip=`sudo ifconfig wlan0 | grep -i inet`
 
         if [[ ("${conn}" = *"${ssid}"*) && ("$wlan0ip" != "") ]]
         then
@@ -116,11 +116,11 @@ if [ "${ROS_MASTER_URI}" == "" ]; then
     return
 fi
 
-# Try to get wifi address first
-my_ip="$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
+# Try to get eth address first (takes priority)
+my_ip="$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
 
 if  [ "${my_ip}" == "" ]; then
-    my_ip="$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
+    my_ip="$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
 fi
 
 #echo ${my_ip}

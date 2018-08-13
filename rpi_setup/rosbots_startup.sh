@@ -3,6 +3,9 @@
 . ${ROSBOTS_WS_PATH}/build/opt/ros/kinetic/setup.sh
 . ${ROSBOTS_HOME}/rosbots_catkin_ws/devel/setup.sh
 
+# Needed for remote roslaunches
+export ROSLAUNCH_SSH_UNKNOWN=1
+
 export PYTHONPATH="${ROSBOTS_HOME}/lib/python:${PYTHONPATH}"
 
 touch ${ROSBOTS_HOME}/roscore.log
@@ -23,12 +26,12 @@ do
     #echo "ifconfig - ${aaa}" >> ${ROSBOTS_HOME}/roscore.log
     sleep 3
 
-    # Wireless IP?
-    my_ip="$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
+    # Eth IP takes priority
+    my_ip="$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
 
     # No wireless IP, what about ethernet?
     if  [ "$my_ip" = "" ]; then
-	my_ip="$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
+	my_ip="$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://g')"
     fi
 
     # Found IP?

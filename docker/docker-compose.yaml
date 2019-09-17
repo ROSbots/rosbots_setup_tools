@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  portainer_service:
+    image: portainer/portainer:1.22.0
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - rosbots_network
+  mqtt_service:
+    container_name: mqtt-server
+    image: eclipse-mosquitto:latest
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - rosbots_network
+
+networks:
+  rosbots_network:

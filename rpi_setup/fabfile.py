@@ -517,6 +517,50 @@ def _setup_ros_other_packages(rospkg, run_rosdep=True):
 
 
 def step_4_setup_opencv_for_pi():
+    """
+To build this in a Docker container:
+
+run:
+docker run -it --name rosbots_build rosbots-raspbian:lite /bin/bash
+
+apt-get update; apt-get -y upgrade
+apt-get install -y libgdk-pixbuf2.0-dev libpango1.0-dev libcairo2-dev 
+apt-get install -y libgtk2.0-dev 
+apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libatlas-base-dev gfortran python2.7-dev python3-dev libavutil-dev python-pip git
+pip install numpy
+mkdir -p /home/pi/gitspace
+cd /home/pi/gitspace
+git clone https://github.com/opencv/opencv.git
+cd opencv
+git checkout -b 3.4.6_branch tags/3.4.6
+cd ../
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv_contrib
+git checkout -b 3.4.6_branch tags/3.4.6
+cd ../opencv
+mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_ENABLE_NONFREE=ON -D OPENCV_EXTRA_MODULES_PATH=/home/pi/gitspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..
+make -j4
+
+On physcial RPi:
+cd /home/pi/gitspace
+git clone https://github.com/opencv/opencv.git
+cd opencv
+git checkout -b 3.4.6_branch tags/3.4.6
+cd ../
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv_contrib
+git checkout -b 3.4.6_branch tags/3.4.6
+copy /home/pi/gitspace/opencv/build to /home/pi/gitspace/opencv
+sudo apt-get update; sudo apt-get -y upgrade
+sudo apt-get install -y libgdk-pixbuf2.0-dev libpango1.0-dev libcairo2-dev 
+sudo apt-get install -y libgtk2.0-dev 
+sudo apt-get install -y build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libatlas-base-dev gfortran python2.7-dev python3-dev libavutil-dev python-pip git
+then cd /home/pi/gitspace/opencv/build,
+'sudo make install/fast', 'sudo ldconfig'
+
+    """
     _pp("Roughly following http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/")
 
     #_fp("Update system first")
@@ -549,8 +593,10 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv.git")
         with cd(git_path + "/opencv"):
             run("git tag -l")
-            _pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.4.1_branch tags/3.4.1")
+            #_pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
+            #run("git checkout -b 3.4.1_branch tags/3.4.1")
+            _pp("We are compiling 3.4.6 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.4.6_branch tags/3.4.6")
 
     opencv_contrib_path = git_path + "/opencv_contrib"
     if not fabfiles.exists(opencv_contrib_path):
@@ -558,8 +604,10 @@ def step_4_setup_opencv_for_pi():
             run("git clone https://github.com/opencv/opencv_contrib.git")
         with cd(opencv_contrib_path):
             run("git tag -l")
-            _pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
-            run("git checkout -b 3.4.1_branch tags/3.4.1")
+            #_pp("We are compiling 3.4.1 - make sure this is the latest from the tag list printed above")
+            #run("git checkout -b 3.4.1_branch tags/3.4.1")
+            _pp("We are compiling 3.4.6 - make sure this is the latest from the tag list printed above")
+            run("git checkout -b 3.4.6_branch tags/3.4.6")
             
     _fp("Setting up OpenCV cmake if need be")
     if not fabfiles.exists(git_path + "/opencv/build"):
@@ -570,7 +618,7 @@ def step_4_setup_opencv_for_pi():
         with cd(git_path + "/opencv/build"):
             run("cmake -D CMAKE_BUILD_TYPE=RELEASE " + \
                 "-D CMAKE_INSTALL_PREFIX=/usr/local " + \
-                "-D INSTALL_PYTHON_EXAMPLES=ON " + \
+                "-D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_ENABLE_NONFREE=ON " + \
                 "-D OPENCV_EXTRA_MODULES_PATH=" + \
                 opencv_contrib_path + "/modules " + \
                 "-D BUILD_EXAMPLES=ON ..")
@@ -602,6 +650,61 @@ def step_x_setup_ros_for_ubuntu_mate_pi():
     
 
 def step_1_setup_ros_for_pi():
+    """
+To compile ros2 on in a Docker Raspbian container:
+
+docker run -it --name rosbots_ros2_build rosbots-raspbian:lite /bin/bash
+
+update-locale LC_ALL=en_GB.UTF-8 LANG=en_GB.UTF-8
+export LANG=en_GB.UTF-8
+export LC_ALL=en_GB.UTF-8
+apt update && apt install -y \
+  build-essential \
+  cmake \
+  git \
+  python3-pip \
+  python-rosdep \
+  libxml2-dev \
+  libxslt1-dev \
+  wget
+apt install -y virtualenvwrapper
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+mkvirtualenv py_3 --python=/usr/bin/python3
+pip install -U argcomplete catkin_pkg colcon-common-extensions coverage empy flake8 flake8-blind-except flake8-builtins flake8-class-newline flake8-comprehensions flake8-deprecated flake8-docstrings flake8-import-order flake8-quotes lark-parser mock nose pep8 pydocstyle pyparsing setuptools vcstool \
+  pytest-repeat \
+  pytest-rerunfailures \
+  pytest \
+  pytest-cov \
+  pytest-runner \
+  lxml \
+  rosdep
+apt-get install --no-install-recommends -y \
+  libasio-dev \
+  libtinyxml2-dev
+mkdir -p /home/pi/ros2_ws/src
+cd /home/pi/ros2_ws
+wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos
+vcs import src < ros2.repos
+(sudo) rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src --rosdistro crystal -y -r --os=debian:stretch
+pip install -U lark-parser
+colcon build --symlink-install --packages-skip ros1_bridge --packages-ignore qt_gui_cpp rqt_gui_cpp
+
+On the physical RPi, do all steps above except the colcon build step
+then, docker cp /home/pi/ros2_ws/install ./build ./log to the physical RPi /home/pi/ros2_ws
+
+Install python3.6
+
+Change these scripts to use the python3 in the correct virtualenv directory
+install/ros2cli/bin/_ros2_daemon:#!/root/.virtualenvs/py_3/bin/python3
+install/ros2cli/bin/ros2:#!/root/.virtualenvs/py_3/bin/python3
+
+. ~/ros2_ws/install/local_setup.bash (or setup.bash)
+ros2 run demo_nodes_cpp talker
+ros2 run demo_nodes_py listener
+
+    """
     global WS_DIR
     global INSTALL_DIR
 

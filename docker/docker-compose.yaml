@@ -10,6 +10,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - rosbots_network
+  ros2_web_bridge_service:
+    build:
+       context: ./
+       dockerfile: Dockerfile.ros2_web_bridge
+    image: rosbots/ros2-web-bridge:0.2.7
+    ports:
+      - "9090:9090"
+    networks:
+      - rosbots_network
   mqtt_service:
     container_name: mqtt-server
     image: eclipse-mosquitto:latest

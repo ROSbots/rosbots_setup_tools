@@ -1,0 +1,19 @@
+ARG FROM_IMAGE=osrf/ros2:nightly
+FROM $FROM_IMAGE
+
+RUN apt-get update && \
+    curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh && \
+    /bin/bash nodesource_setup.sh && \
+    apt-get install -y nodejs && \
+    git clone https://github.com/RobotWebTools/ros2-web-bridge.git && \
+    cd ros2-web-bridge && \
+    git checkout 0.2.7 -b rel_branch
+
+WORKDIR /ros2-web-bridge
+
+RUN /bin/bash -c 'source "/opt/ros/$ROS_DISTRO/setup.bash"; \
+    echo `export`; cd /ros2-web-bridge; npm install'
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+
+CMD ["node", "bin/rosbridge.js"]

@@ -1,4 +1,5 @@
-ARG FROM_IMAGE=osrf/ros2:nightly
+ARG FROM_IMAGE=rosbots/ros2:eloquent-2019-10-08
+# osrf/ros2:nightly
 FROM $FROM_IMAGE
 
 RUN apt-get update && \

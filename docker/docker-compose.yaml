@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   portainer_service:
-    image: portainer/portainer:1.22.0
+    image: portainer/portainer:1.22.2
     restart: always
     ports:
       - 9000:9000
@@ -12,8 +12,8 @@ services:
       - rosbots_network
   ros2_web_bridge_service:
     build:
-       context: ./
-       dockerfile: Dockerfile.ros2_web_bridge
+      context: ./
+      dockerfile: Dockerfile.ros2_web_bridge
     image: rosbots/ros2-web-bridge:0.2.7
     ports:
       - "9090:9090"
@@ -26,6 +26,12 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
+    networks:
+      - rosbots_network
+  ros2_console_service:
+    container_name: ros2_console
+    image: rosbots/ros2:eloquent
+    command: ["tail", "-f", "/dev/null"]
     networks:
       - rosbots_network
 
